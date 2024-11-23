@@ -19,9 +19,7 @@ import (
 	"backend/controller"
 	"backend/middleware"
 	"backend/models"
-	"fmt"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -64,7 +62,8 @@ func main() {
 	auth.GET("/logout", middleware.ValidateJWT, controller.Logout)
 
 	// Getting the port from the .env file.
-	PORT := os.Getenv("PORT")
-	IP := os.Getenv("IP")
-	app.Run(fmt.Sprintf("%s:%s", IP, PORT))
+	// PORT := os.Getenv("PORT")
+	// IP := os.Getenv("IP")
+	// app.Run(fmt.Sprintf("%s:%s", IP, PORT))
+	app.Run()
 }
