@@ -18,6 +18,13 @@ func ValidateJWT(c *gin.Context) {
 	var user models.Users
 	jwtkey := os.Getenv("JWTKEY")
 
+	// Ensure that the JWT key is set
+	if jwtkey == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "JWT key is not set"})
+		c.Abort()
+		return
+	}
+
 	// Extract token from the Authorization header
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
@@ -55,25 +62,28 @@ func ValidateJWT(c *gin.Context) {
 
 	// Ensure the token is valid
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-
 		userID := claims["userid"]
 		userName := claims["username"]
 
+		// Set user ID and username in context
 		c.Set("userid", userID)
 		c.Set("username", userName)
 
-		if models.DB.Where("userid = ? AND username = ?", userID, userName).First(&user).Error != nil {
+		// Fetch the user from the database
+		if err := models.DB.Where("userid = ? AND username = ?", userID, userName).First(&user).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				// User not found
 				c.JSON(http.StatusNotFound, gin.H{
 					"message": "User not found",
 				})
 			} else {
-				// Other database error
+				// Other database errors
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"message": "Database Error",
 				})
 			}
+			c.Abort()
+			return
 		}
 
 		// Continue to the next handler

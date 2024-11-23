@@ -6,3 +6,7 @@ type Stores struct {
 	SubjectName string `gorm:"column:subjectname" json:"subjectname"`
 	GoogleID    string `gorm:"column:googleid" json:"googleid"`
 }
+
+func (Stores) TableName() string {
+	return "tidynotes.stores"
+}

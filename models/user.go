@@ -7,3 +7,7 @@ type Users struct {
 	UserPassword string `gorm:"column:userpassword" json:"userpassword"`
 	IsLoggedIn   bool   `gorm:"column:isloggedin" json:"isloggedin"`
 }
+
+func (Users) TableName() string {
+	return "tidynotes.users"
+}
