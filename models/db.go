@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -20,14 +20,12 @@ func ConnectToDB() {
 	databaseip := os.Getenv("DBIP")
 	databaseport := os.Getenv("DBPORT")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbuser, password, databaseip, databaseport, database)
 	// Initializing the Database.
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=require", dbuser, password, databaseip, databaseport, database)
+	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Unable to connect to database:", err)
-		return
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	log.Println("Database connection established successfully.")
+	log.Println("Database connection established successfully.", DB)
 }
